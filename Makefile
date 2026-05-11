@@ -10,8 +10,8 @@ help:
 	@echo "  build       Build all packages"
 	@echo "  lint        Lint all packages"
 	@echo "  format      Format all packages"
-	@echo "  test        Run unit tests
-  test-e2e    Run E2E tests (requires infra running)"
+	@echo "  test        Run unit tests"
+	@echo "  test-e2e    Run E2E tests (requires infra running)"
 	@echo "  db-migrate  Run database migrations"
 	@echo "  db-generate Generate migrations from schema"
 	@echo "  reset       Wipe infra volumes + reinstall + migrate"
