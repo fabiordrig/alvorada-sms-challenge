@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { fetchConversations } from '../api.js';
-import { StatusBadge } from './StatusBadge.js';
+import { fetchConversations } from '../api.ts';
+import { StatusBadge } from './StatusBadge.tsx';
 
 export function ConversationList() {
   const { data, isLoading, error } = useQuery({

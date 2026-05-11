@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router';
 import { ConversationList } from '../features/conversations/components/ConversationList';
 import { ConversationDetail } from '../features/conversations/components/ConversationDetail';
+import { SimulateSmsForm } from '../features/conversations/components/SimulateSmsForm';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 10_000, retry: 2 } },
@@ -48,6 +49,7 @@ const indexRoute = createRoute({
         <h2 className="text-xl font-bold text-gray-900">Conversations</h2>
         <p className="mt-1 text-sm text-gray-500">All SMS conversations, newest first</p>
       </div>
+      <SimulateSmsForm />
       <ConversationList />
     </div>
   ),

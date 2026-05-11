@@ -10,5 +10,8 @@ export function validateTwilioSignature(
   const paramString = sortedKeys.reduce((acc, key) => acc + key + params[key], '');
   const data = url + paramString;
   const expected = crypto.createHmac('sha1', authToken).update(data).digest('base64');
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
 }
