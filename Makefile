@@ -1,4 +1,4 @@
-.PHONY: help setup dev dev-api dev-worker dev-web build lint format test db-migrate db-generate reset infra-up infra-down
+.PHONY: help setup dev dev-api dev-worker dev-web build lint format test test-e2e db-migrate db-generate reset infra-up infra-down
 
 help:
 	@echo "Available targets:"
@@ -10,7 +10,8 @@ help:
 	@echo "  build       Build all packages"
 	@echo "  lint        Lint all packages"
 	@echo "  format      Format all packages"
-	@echo "  test        Run all tests"
+	@echo "  test        Run unit tests
+  test-e2e    Run E2E tests (requires infra running)"
 	@echo "  db-migrate  Run database migrations"
 	@echo "  db-generate Generate migrations from schema"
 	@echo "  reset       Wipe infra volumes + reinstall + migrate"
@@ -48,6 +49,13 @@ format:
 
 test:
 	pnpm test
+
+test-e2e:
+	$(MAKE) infra-up
+	@echo "Waiting for postgres..."
+	@until docker compose exec -T postgres pg_isready -U sms 2>/dev/null; do sleep 1; done
+	$(MAKE) db-migrate
+	pnpm --filter @sms/api test:e2e
 
 db-migrate:
 	pnpm db:migrate
