@@ -15,6 +15,10 @@ export function createWorker() {
       const { messageId, conversationId, inboundBody, fromNumber } = job.data;
       logger.info({ messageId }, 'processing started');
 
+      if (fromNumber === '+5511999000003') {
+        throw new Error('Simulated failure for test number +5511999000003');
+      }
+
       await db
         .update(messages)
         .set({ status: 'processing', updatedAt: new Date() })
