@@ -1,0 +1,95 @@
+import { Worker, Job } from 'bullmq';
+import { eq } from 'drizzle-orm';
+import { db } from '../../db/client.ts';
+import { messages, conversations } from '../../db/schema.ts';
+import { connection, ProcessJobData } from '../../queue/index.ts';
+import { getTwilioClient } from '../../services/twilio/index.ts';
+import { sseBus } from '../../services/events/sse.bus.ts';
+import { generateReply } from './processing.handler.ts';
+import { logger } from '../../lib/logger.ts';
+
+export function createWorker() {
+  return new Worker<ProcessJobData>(
+    'sms-processing',
+    async (job: Job<ProcessJobData>) => {
+      const { messageId, conversationId, inboundBody, fromNumber } = job.data;
+      logger.info({ messageId }, 'processing started');
+
+      await db
+        .update(messages)
+        .set({ status: 'processing', updatedAt: new Date() })
+        .where(eq(messages.id, messageId));
+
+      sseBus.emit('message:processing', {
+        type: 'message:processing',
+        conversationId,
+        messageId,
+        status: 'processing',
+      });
+
+      const replyBody = await generateReply(inboundBody);
+
+      const [outbound] = await db
+        .insert(messages)
+        .values({
+          conversationId,
+          direction: 'outbound',
+          body: replyBody,
+          status: 'received',
+        })
+        .returning({ id: messages.id });
+
+      const twilioClient = getTwilioClient();
+      const sid = await twilioClient.sendMessage(fromNumber, replyBody);
+
+      await db
+        .update(messages)
+        .set({ twilioSid: sid, status: 'sent', updatedAt: new Date() })
+        .where(eq(messages.id, outbound.id));
+
+      await db
+        .update(messages)
+        .set({ status: 'sent', updatedAt: new Date() })
+        .where(eq(messages.id, messageId));
+
+      await db
+        .update(conversations)
+        .set({ updatedAt: new Date() })
+        .where(eq(conversations.id, conversationId));
+
+      sseBus.emit('message:sent', {
+        type: 'message:sent',
+        conversationId,
+        messageId,
+        status: 'sent',
+      });
+
+      logger.info({ messageId, sid }, 'processing complete');
+    },
+    {
+      connection,
+      concurrency: 10,
+    },
+  );
+}
+
+export function attachWorkerEvents(worker: Worker) {
+  worker.on('failed', async (job, err) => {
+    if (!job) return;
+    const isLastAttempt = job.attemptsMade >= (job.opts.attempts ?? 3);
+    if (isLastAttempt) {
+      const { messageId, conversationId } = job.data as ProcessJobData;
+      logger.error({ messageId, err: err.message }, 'job dead-lettered');
+      await db
+        .update(messages)
+        .set({ status: 'failed', error: err.message, updatedAt: new Date() })
+        .where(eq(messages.id, messageId));
+      sseBus.emit('message:failed', {
+        type: 'message:failed',
+        conversationId,
+        messageId,
+        status: 'failed',
+      });
+    }
+  });
+}

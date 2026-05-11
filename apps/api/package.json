@@ -1,0 +1,36 @@
+{
+  "name": "@sms/api",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev:server": "tsx watch --env-file=../../.env src/server.ts",
+    "dev:worker": "tsx watch --env-file=../../.env src/worker.ts",
+    "build": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src",
+    "test": "vitest run",
+    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@sms/shared": "workspace:*",
+    "bullmq": "^5.12.6",
+    "drizzle-orm": "^0.31.2",
+    "fastify": "^4.27.0",
+    "@fastify/formbody": "^7.4.0",
+    "pino": "^9.2.0",
+    "ioredis": "^5.4.1",
+    "pg": "^8.11.5",
+    "pino-pretty": "^11.2.1",
+    "twilio": "^5.2.3",
+    "zod": "^3.23.8",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6",
+    "drizzle-kit": "^0.22.8",
+    "tsx": "^4.15.6",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

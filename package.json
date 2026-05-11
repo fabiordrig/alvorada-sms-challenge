@@ -1,0 +1,19 @@
+{
+  "name": "alvorada-sms-challenge",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n api,worker,web -c cyan,yellow,green \"pnpm --filter @sms/api dev:server\" \"pnpm --filter @sms/api dev:worker\" \"pnpm --filter @sms/web dev\"",
+    "dev:api": "pnpm --filter @sms/api dev:server",
+    "dev:worker": "pnpm --filter @sms/api dev:worker",
+    "dev:web": "pnpm --filter @sms/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format",
+    "test": "pnpm -r test",
+    "db:migrate": "pnpm --filter @sms/api db:migrate",
+    "db:generate": "pnpm --filter @sms/api db:generate"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
