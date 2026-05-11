@@ -34,14 +34,14 @@ function webhookBody(overrides: Record<string, string> = {}) {
   return params.toString();
 }
 
-describe('POST /api/webhook/sms', () => {
+describe('POST /webhook/sms', () => {
   it('responds 200 and enqueues job within 500ms', async () => {
     const sid = `SM${Date.now()}`;
     const start = Date.now();
 
     const res = await app.inject({
       method: 'POST',
-      url: '/api/webhook/sms',
+      url: '/webhook/sms',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: webhookBody({ MessageSid: sid }),
     });
@@ -66,14 +66,14 @@ describe('POST /api/webhook/sms', () => {
 
     await app.inject({
       method: 'POST',
-      url: '/api/webhook/sms',
+      url: '/webhook/sms',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body,
     });
 
     const res = await app.inject({
       method: 'POST',
-      url: '/api/webhook/sms',
+      url: '/webhook/sms',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body,
     });
@@ -89,7 +89,7 @@ describe('POST /api/webhook/sms', () => {
 
     await app.inject({
       method: 'POST',
-      url: '/api/webhook/sms',
+      url: '/webhook/sms',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body: webhookBody({ MessageSid: sid }),
     });
