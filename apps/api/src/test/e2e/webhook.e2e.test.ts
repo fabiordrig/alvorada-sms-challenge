@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
+import { sql } from 'drizzle-orm';
 import { buildApp } from '../../app.ts';
 import { db } from '../../db/client.ts';
 import { smsQueue, connection } from '../../queue/index.ts';
-import { messages, conversations } from '../../db/schema.ts';
+import { messages } from '../../db/schema.ts';
 import type { FastifyInstance } from 'fastify';
 
 let app: FastifyInstance;
@@ -13,8 +14,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await db.delete(messages);
-  await db.delete(conversations);
+  await db.execute(sql`TRUNCATE TABLE messages, conversations RESTART IDENTITY CASCADE`);
   await smsQueue.drain();
 });
 
