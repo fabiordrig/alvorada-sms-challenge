@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ConversationList } from '../../features/conversations/components/ConversationList.js';
+import { ConversationList } from '../../features/conversations/components/ConversationList';
 
 export const Route = createFileRoute('/')({
   component: () => (

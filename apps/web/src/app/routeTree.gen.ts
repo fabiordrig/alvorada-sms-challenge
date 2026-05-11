@@ -1,4 +1,10 @@
-import { createRootRoute } from '@tanstack/react-router';
-// Este arquivo é gerado automaticamente pelo TanStack Router CLI
-// Execute: pnpm --filter @sms/web exec tsr generate
-export const routeTree = {} as any;
+import { Route as rootRoute } from './routes/__root';
+import { Route as indexRoute } from './routes/index';
+import { Route as conversationsIdRoute } from './routes/conversations/$id';
+
+const rootRouteWithChildren = rootRoute.addChildren([
+  indexRoute,
+  conversationsIdRoute,
+]);
+
+export const routeTree = rootRouteWithChildren;

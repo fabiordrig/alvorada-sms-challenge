@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ConversationDetail } from '../../../features/conversations/components/ConversationDetail.js';
+import { ConversationDetail } from '../../../features/conversations/components/ConversationDetail';
 
 export const Route = createFileRoute('/conversations/$id')({
   component: () => {
