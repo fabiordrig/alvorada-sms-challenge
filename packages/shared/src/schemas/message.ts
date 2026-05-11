@@ -11,6 +11,7 @@ export const MessageSchema = z.object({
   body: z.string(),
   status: MessageStatusSchema,
   error: z.string().nullable(),
+  attempts: z.number().int().default(0),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

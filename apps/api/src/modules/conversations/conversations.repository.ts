@@ -16,6 +16,7 @@ function mapMessage(row: typeof messages.$inferSelect): Message {
     body: row.body,
     status: row.status,
     error: row.error ?? null,
+    attempts: row.attempts,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
   };

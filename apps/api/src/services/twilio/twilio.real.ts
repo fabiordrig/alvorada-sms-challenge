@@ -12,12 +12,12 @@ export class RealTwilioClient implements TwilioClient {
     this.client = twilio(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN);
   }
 
-  async sendMessage(to: string, body: string): Promise<string> {
+  async sendMessage(to: string, body: string): Promise<{ sid: string }> {
     const msg = await this.client.messages.create({
       to,
       from: config.TWILIO_FROM_NUMBER!,
       body,
     });
-    return msg.sid;
+    return { sid: msg.sid };
   }
 }

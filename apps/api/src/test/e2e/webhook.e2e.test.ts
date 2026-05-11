@@ -91,8 +91,7 @@ describe('POST /webhook/sms', () => {
     expect(msgs).toHaveLength(1);
   });
 
-  it.skip('full pipeline: status transitions to sent (E2E_FULL=true to enable)', async () => {
-    if (!process.env.E2E_FULL) return;
+  it.skipIf(!process.env.E2E_FULL)('full pipeline: status transitions to sent (E2E_FULL=true to enable)', async () => {
     const sid = `SM${Date.now()}full`;
 
     await app.inject({

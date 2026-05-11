@@ -416,6 +416,54 @@ See `SECURITY.md` for the full threat model. Key points:
 | Frontend routing      | TanStack Router            | React Router / Next.js    | Type-safe file-based routes; loader pattern; no SSR needed             |
 | Idempotency           | DB UNIQUE + BullMQ jobId  | Redis SET NX              | Single source of truth in Postgres; Redis is backup layer              |
 | Twilio mock           | Injected interface         | nock / jest mock          | Works in production mode too; no test-only code paths                  |
-| Ordering              | FIFO + global concurrency=5 | Per-conv lock             | Sufficient for challenge scope; simple to reason about                 |
+| Ordering              | FIFO + Redis lock (500 ms reschedule) | BullMQ Pro groups  | Lock is simpler than Pro; acceptable latency at challenge scale        |
 | Auth                  | None (out of scope)        | OIDC / JWT                | Challenge requirement; noted as known gap                              |
 | Monorepo tooling      | pnpm workspaces            | Nx / Turborepo            | Lightweight; sufficient for 3-package repo                             |
+
+---
+
+## 12. Known Gaps & Trade-offs Not Yet Documented
+
+### Redis job retention growth
+
+`removeOnComplete: false` and `removeOnFail: false` are deliberate for development
+visibility — every job remains inspectable in Bull Board. In production these should be:
+
+```ts
+removeOnComplete: { age: 3600, count: 1_000 },
+removeOnFail:    { age: 86_400, count: 5_000 },
+```
+
+Without TTL policy, Redis memory grows unboundedly under sustained load. Not implemented.
+
+### SSE + polling dual mechanism
+
+The frontend subscribes to `GET /conversations/:id/sse` (EventSource) **and** polls via
+`refetchInterval` (3–5 s) simultaneously. SSE is the primary path; polling is a silent
+fallback for SSE drops without reconnect logic. Cost: ~20 % of requests are redundant
+when the SSE stream is healthy. A proper reconnect strategy would eliminate the polling
+dependency; not worth the complexity at challenge scope.
+
+### No pagination on conversation list
+
+`GET /conversations` returns all rows. At 100 k+ conversations this becomes a
+multi-megabyte response. Offset or cursor pagination is linear work that is out of scope
+for this challenge. The partial index on `status` mitigates query cost, but the wire
+payload is unbounded.
+
+### No Twilio rate limiting on the worker
+
+`concurrency = 10` allows up to 10 simultaneous Twilio API calls per worker process. If
+all 10 fail with a 429, all 10 retry simultaneously — amplifying the storm. BullMQ's
+built-in `RateLimiter` would cap requests per time window:
+
+```ts
+limiter: { max: 5, duration: 1000 }
+```
+
+Acceptable at challenge traffic volumes; required in production.
+
+### SSE is single-node only
+
+Documented in §8. Mitigation in this implementation: the React client polls as a fallback.
+Upgrade path: Redis Pub/Sub (§8). Not implemented.

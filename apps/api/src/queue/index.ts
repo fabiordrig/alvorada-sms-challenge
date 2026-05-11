@@ -7,7 +7,7 @@ export const connection = new IORedis(config.REDIS_URL, { maxRetriesPerRequest: 
 export const smsQueue = new Queue('sms-processing', {
   connection,
   defaultJobOptions: {
-    attempts: 3,
+    attempts: 5,
     backoff: { type: 'exponential', delay: 1000 },
     removeOnComplete: false,
     removeOnFail: false,

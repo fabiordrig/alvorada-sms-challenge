@@ -1,4 +1,5 @@
-import { pgTable, uuid, text, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, integer, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 export const messageStatusEnum = pgEnum('message_status', [
   'received',
@@ -27,10 +28,12 @@ export const messages = pgTable(
     body: text('body').notNull(),
     status: messageStatusEnum('status').notNull().default('received'),
     error: text('error'),
+    attempts: integer('attempts').notNull().default(0),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (t) => ({
     byConversation: index('msg_conv_created_idx').on(t.conversationId, t.createdAt),
+    byStatusOpen: index('msg_status_open_idx').on(t.status).where(sql`${t.status} IN ('received', 'processing')`),
   }),
 );

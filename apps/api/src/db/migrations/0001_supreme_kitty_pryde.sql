@@ -1,0 +1,2 @@
+ALTER TABLE "messages" ADD COLUMN "attempts" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "msg_status_open_idx" ON "messages" USING btree ("status") WHERE "messages"."status" IN ('received', 'processing');
