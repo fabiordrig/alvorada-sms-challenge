@@ -13,6 +13,11 @@ beforeAll(async () => {
   await app.ready();
 });
 
+beforeEach(async () => {
+  await db.execute(sql`TRUNCATE TABLE messages, conversations RESTART IDENTITY CASCADE`);
+  await smsQueue.drain();
+});
+
 afterEach(async () => {
   await db.execute(sql`TRUNCATE TABLE messages, conversations RESTART IDENTITY CASCADE`);
   await smsQueue.drain();
@@ -58,6 +63,9 @@ describe('POST /webhook/sms', () => {
     const job = await smsQueue.getJob(msgs[0].id);
     expect(job).toBeDefined();
     expect(job!.data.messageId).toBe(msgs[0].id);
+    expect(job!.data.conversationId).toBe(msgs[0].conversationId);
+    expect(job!.data.fromNumber).toBe('+5511999000001');
+    expect(job!.data.inboundBody).toBe('E2E test message');
   });
 
   it('returns 200 on duplicate MessageSid without creating duplicate row', async () => {
