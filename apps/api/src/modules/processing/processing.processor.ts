@@ -1,12 +1,12 @@
 import { Worker, Job, DelayedError } from 'bullmq';
 import { eq } from 'drizzle-orm';
-import { db } from '../../db/client.ts';
-import { messages, conversations } from '../../db/schema.ts';
-import { connection, ProcessJobData } from '../../queue/index.ts';
-import { getTwilioClient } from '../../services/twilio/index.ts';
-import { sseBus } from '../../services/events/sse.bus.ts';
-import { generateReply } from './processing.handler.ts';
-import { logger } from '../../lib/logger.ts';
+import { db } from '../../db/client';
+import { messages, conversations } from '../../db/schema';
+import { connection, ProcessJobData } from '../../queue/index';
+import { getTwilioClient } from '../../services/twilio/index';
+import { sseBus } from '../../services/events/sse.bus';
+import { generateReply } from './processing.handler';
+import { logger } from '../../lib/logger';
 
 export async function processJob(job: Job<ProcessJobData>, token?: string): Promise<void> {
   const { messageId, conversationId, inboundBody, fromNumber } = job.data;
@@ -17,7 +17,7 @@ export async function processJob(job: Job<ProcessJobData>, token?: string): Prom
   }
 
   const lockKey = `lock:conversation:${conversationId}`;
-  const acquired = await connection.set(lockKey, '1', 'NX', 'PX', 30_000);
+  const acquired = await connection.set(lockKey, '1', 'PX', 30_000, 'NX');
   if (!acquired) {
     logger.info({ conversationId, messageId }, 'lock held — rescheduling');
     await job.moveToDelayed(Date.now() + 500, token);

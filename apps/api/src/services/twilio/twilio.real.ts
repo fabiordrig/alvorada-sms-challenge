@@ -1,6 +1,6 @@
 import twilio from 'twilio';
-import { TwilioClient } from './twilio.interface.ts';
-import { config } from '../../config.ts';
+import { TwilioClient } from './twilio.interface';
+import { config } from '../../config';
 
 export class RealTwilioClient implements TwilioClient {
   private client: ReturnType<typeof twilio>;

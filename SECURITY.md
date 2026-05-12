@@ -11,20 +11,27 @@ signature = base64( HMAC-SHA1( authToken, url + sortedPostParams ) )
 X-Twilio-Signature: <signature>
 ```
 
-The API validates this header before any processing occurs. Validation is implemented as a
-Fastify `preHandler` hook applied exclusively to `/webhook/*` routes.
+The API validates this header before any processing occurs. Validation is implemented as an
+`if` block at the top of the `/webhook/sms` route handler, before any business logic runs.
 
 ```ts
-// packages/shared/src/twilio/validateSignature.ts
-import twilio from 'twilio';
+// apps/api/src/modules/webhook/webhook.signature.ts
+import crypto from 'crypto';
 
 export function validateTwilioSignature(
   authToken: string,
   url: string,
   params: Record<string, string>,
-  signature: string
+  signature: string,
 ): boolean {
-  return twilio.validateRequest(authToken, signature, url, params);
+  const sortedKeys = Object.keys(params).sort();
+  const paramString = sortedKeys.reduce((acc, key) => acc + key + params[key], '');
+  const data = url + paramString;
+  const expected = crypto.createHmac('sha1', authToken).update(data).digest('base64');
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
 }
 ```
 
@@ -43,7 +50,7 @@ because the mock client does not generate real signatures.
 ### What happens on failure
 
 A request with an invalid or missing signature returns `403 Forbidden` with an empty body.
-No message processing occurs. The event is logged at `warn` level with the request IP.
+No message processing occurs. The event is logged at `warn` level.
 
 ---
 
@@ -54,7 +61,7 @@ No message processing occurs. The event is logged at `warn` level with the reque
 | Threat                        | Mitigation                                                                 |
 |-------------------------------|----------------------------------------------------------------------------|
 | Forged webhook (spoofing)      | HMAC-SHA1 signature validation (`TWILIO_VALIDATE_SIGNATURE=true`)          |
-| Replay attack                 | Twilio timestamps in the signature; reject if `>5 min` old (configurable) |
+| Replay attack                 | Not implemented — see Known Gaps                                           |
 | Duplicate delivery             | `UNIQUE(twilio_sid)` + `ON CONFLICT DO NOTHING`; idempotent processing     |
 | Worker job poison pill         | BullMQ DLQ; job moves to `failed` after N attempts; no infinite loop       |
 | Injection via SMS body         | Body stored as parameterized SQL; never interpolated into queries           |
@@ -87,17 +94,17 @@ GDPR, LGPD, and similar frameworks.
 
 ### Logging policy
 
-**Never log raw PII.** The pino logger serializers redact sensitive fields:
+**Best practice: never log raw PII.** The current logger (`apps/api/src/lib/logger.ts`) uses
+basic pino without redaction configured — field redaction is listed in Known Gaps below.
+
+In production, add pino redaction:
 
 ```ts
-// apps/api/src/logger.ts
 const redact = {
   paths: ['req.body.Body', 'req.body.From', 'message.body'],
   censor: '[REDACTED]'
 };
 ```
-
-Phone numbers in log lines use truncation: `+5511999****999`.
 
 ### Storage
 
@@ -156,6 +163,17 @@ A production deployment would add rate limiting at the WAF or Fastify middleware
 Signature validation alone is the webhook trust mechanism. A complementary control —
 allowlisting Twilio's published IP ranges at the load balancer — is recommended in
 production but not implemented here.
+
+### No replay attack protection
+
+Signature validation confirms authenticity but not freshness. A captured valid request could be
+replayed. Mitigation: check the `X-Twilio-Timestamp` header and reject requests older than 5
+minutes, matching Twilio's own recommendation.
+
+### No PII redaction in logs
+
+The pino logger has no `redact` config. Phone numbers and message bodies may appear in log
+output. In production, add `redact: { paths: ['req.body.Body', 'req.body.From'], censor: '[REDACTED]' }`.
 
 ### No secrets rotation automation
 

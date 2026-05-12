@@ -1,7 +1,7 @@
-import type { TwilioClient } from './twilio.interface.ts';
-import { MockTwilioClient } from './twilio.mock.ts';
-import { RealTwilioClient } from './twilio.real.ts';
-import { config } from '../../config.ts';
+import type { TwilioClient } from './twilio.interface';
+import { MockTwilioClient } from './twilio.mock';
+import { RealTwilioClient } from './twilio.real';
+import { config } from '../../config';
 
 export type { TwilioClient };
 

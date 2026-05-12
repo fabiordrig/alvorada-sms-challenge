@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { conversations, messages } from './schema.ts';
+import { conversations, messages } from './schema';
 
 export const conversationsRelations = relations(conversations, ({ many }) => ({
   messages: many(messages),

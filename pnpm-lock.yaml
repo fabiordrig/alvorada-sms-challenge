@@ -76,8 +76,8 @@ importers:
         specifier: ^5.45.1
         version: 5.100.10(react@18.3.1)
       '@tanstack/react-router':
-        specifier: ^1.45.2
-        version: 1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^1.169.2
+        version: 1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -92,8 +92,8 @@ importers:
         version: 2.6.1
     devDependencies:
       '@tanstack/router-vite-plugin':
-        specifier: ^1.166.56
-        version: 1.166.56(@tanstack/react-router@1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))
+        specifier: ^1.166.50
+        version: 1.166.50(@tanstack/react-router@1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))
       '@types/react':
         specifier: ^18.3.3
         version: 18.3.28
@@ -1035,10 +1035,9 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-router@1.169.8':
-    resolution: {integrity: sha512-LTO9AovPd2Xx2mKY9ywn8zzSAkl+xkLy1KIOqhnjerFnwtXNIgISbCOuwSNcmZtMNlQXLW1Myutmxxus8GSmGg==}
+  '@tanstack/react-router@1.169.2':
+    resolution: {integrity: sha512-OJM7Kguc7ERnweaNRWsyWgIKcl3z23rD1B4jaxjzd9RGdnzpt2HfrWa9rggbT0Hfzhfo4D2ZmsfoTme035tniQ==}
     engines: {node: '>=20.19'}
-    deprecated: 'SECURITY: compromised release containing credential-stealing malware via optionalDependency @tanstack/setup. Do NOT install. Tracking: https://github.com/TanStack/router/issues/7383'
     peerDependencies:
       react: '>=18.0.0 || >=19.0.0'
       react-dom: '>=18.0.0 || >=19.0.0'
@@ -1082,10 +1081,9 @@ packages:
     resolution: {integrity: sha512-xyiLWEKjfBAVhauDSSjXxyf7s8elU6SM+V050sbkofvGmIIvkwPFtDsX7Gvwh14kBd6iCwAT+RiPvXTxAptY0Q==}
     engines: {node: '>=20.19'}
 
-  '@tanstack/router-vite-plugin@1.166.56':
-    resolution: {integrity: sha512-VAhgwypLENG87cFsl7NRIGDjmzv0JWjAqTGhssq9TDEiULEBCZbaGMSYKlSkCZ3Pqhtjv8p596foT95h0ydAHw==}
+  '@tanstack/router-vite-plugin@1.166.50':
+    resolution: {integrity: sha512-T8aAW4UWUPRyGUENpEjWOjVb9heI6SbMzuLgu5kIeTED8ZZ4oIZTmDdoAjDyDVkUqRMn/lfa2/dMoYD7oU5qhw==}
     engines: {node: '>=20.19'}
-    deprecated: 'SECURITY: compromised release containing credential-stealing malware via optionalDependency @tanstack/setup. Do NOT install. Tracking: https://github.com/TanStack/router/issues/7383'
 
   '@tanstack/store@0.9.3':
     resolution: {integrity: sha512-8reSzl/qGWGGVKhBoxXPMWzATSbZLZFWhwBAFO9NAyp0TxzfBP0mIrGb8CP8KrQTmvzXlR/vFPPUrHTLBGyFyw==}
@@ -3199,7 +3197,7 @@ snapshots:
       '@tanstack/query-core': 5.100.10
       react: 18.3.1
 
-  '@tanstack/react-router@1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-router@1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/history': 1.161.6
       '@tanstack/react-store': 0.9.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3235,7 +3233,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-plugin@1.167.35(@tanstack/react-router@1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))':
+  '@tanstack/router-plugin@1.167.35(@tanstack/react-router@1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-jsx': 7.28.6(@babel/core@7.29.0)
@@ -3251,7 +3249,7 @@ snapshots:
       unplugin: 3.0.0
       zod: 3.25.76
     optionalDependencies:
-      '@tanstack/react-router': 1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-router': 1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       vite: 5.4.21(@types/node@25.7.0)
     transitivePeerDependencies:
       - supports-color
@@ -3270,9 +3268,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/router-vite-plugin@1.166.56(@tanstack/react-router@1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))':
+  '@tanstack/router-vite-plugin@1.166.50(@tanstack/react-router@1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))':
     dependencies:
-      '@tanstack/router-plugin': 1.167.35(@tanstack/react-router@1.169.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))
+      '@tanstack/router-plugin': 1.167.35(@tanstack/react-router@1.169.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(vite@5.4.21(@types/node@25.7.0))
     transitivePeerDependencies:
       - '@rsbuild/core'
       - '@tanstack/react-router'

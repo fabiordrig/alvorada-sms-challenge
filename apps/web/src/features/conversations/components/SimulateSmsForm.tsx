@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { sendTestSms } from '../api.ts';
+import { sendTestSms } from '../api';
 
 export function SimulateSmsForm() {
   const queryClient = useQueryClient();
@@ -26,7 +26,10 @@ export function SimulateSmsForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+    >
       <h3 className="mb-3 text-sm font-semibold text-gray-700">Simulate Inbound SMS</h3>
       <div className="flex gap-2">
         <input

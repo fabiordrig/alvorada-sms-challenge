@@ -1,9 +1,9 @@
 import { eq, sql } from 'drizzle-orm';
-import { db } from '../../db/client.ts';
-import { conversations, messages } from '../../db/schema.ts';
-import { smsQueue, ProcessJobData } from '../../queue/index.ts';
-import { sseBus } from '../../services/events/sse.bus.ts';
-import { logger } from '../../lib/logger.ts';
+import { db } from '../../db/client';
+import { conversations, messages } from '../../db/schema';
+import { smsQueue, ProcessJobData } from '../../queue/index';
+import { sseBus } from '../../services/events/sse.bus';
+import { logger } from '../../lib/logger';
 
 export async function handleInbound(payload: {
   from: string;

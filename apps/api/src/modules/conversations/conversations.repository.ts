@@ -1,6 +1,6 @@
 import { desc, eq, asc } from 'drizzle-orm';
-import { db } from '../../db/client.ts';
-import { conversations, messages } from '../../db/schema.ts';
+import { db } from '../../db/client';
+import { conversations, messages } from '../../db/schema';
 import { Conversation, ConversationWithLastMessage, Message } from '@sms/shared';
 
 function toIso(d: Date): string {

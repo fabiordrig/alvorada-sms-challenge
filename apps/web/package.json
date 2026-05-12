@@ -13,14 +13,14 @@
   "dependencies": {
     "@sms/shared": "workspace:*",
     "@tanstack/react-query": "^5.45.1",
-    "@tanstack/react-router": "^1.45.2",
+    "@tanstack/react-router": "^1.169.2",
     "clsx": "^2.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
-    "@tanstack/router-vite-plugin": "^1.166.56",
+    "@tanstack/router-vite-plugin": "^1.166.50",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

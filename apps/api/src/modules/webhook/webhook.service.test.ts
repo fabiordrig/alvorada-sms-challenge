@@ -5,10 +5,10 @@ vi.mock('../../queue/index.ts', () => ({ smsQueue: { add: vi.fn() } }));
 vi.mock('../../services/events/sse.bus.ts', () => ({ sseBus: { emit: vi.fn() } }));
 vi.mock('../../lib/logger.ts', () => ({ logger: { info: vi.fn(), warn: vi.fn() } }));
 
-import { handleInbound } from './webhook.service.ts';
-import { db } from '../../db/client.ts';
-import { smsQueue } from '../../queue/index.ts';
-import { sseBus } from '../../services/events/sse.bus.ts';
+import { handleInbound } from './webhook.service';
+import { db } from '../../db/client';
+import { smsQueue } from '../../queue/index';
+import { sseBus } from '../../services/events/sse.bus';
 
 const mockDb = db as { transaction: ReturnType<typeof vi.fn> };
 const mockQueue = smsQueue as { add: ReturnType<typeof vi.fn> };

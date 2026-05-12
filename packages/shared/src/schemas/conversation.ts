@@ -12,5 +12,9 @@ export const ConversationWithLastMessageSchema = ConversationSchema.extend({
   lastMessage: MessageSchema.nullable(),
 });
 
+export const ConversationIdParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
 export type Conversation = z.infer<typeof ConversationSchema>;
 export type ConversationWithLastMessage = z.infer<typeof ConversationWithLastMessageSchema>;

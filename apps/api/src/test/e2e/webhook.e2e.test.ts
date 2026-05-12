@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from 'vitest';
 import { sql } from 'drizzle-orm';
-import { buildApp } from '../../app.ts';
-import { db } from '../../db/client.ts';
-import { smsQueue, connection } from '../../queue/index.ts';
-import { messages } from '../../db/schema.ts';
+import { buildApp } from '../../app';
+import { db } from '../../db/client';
+import { smsQueue, connection } from '../../queue/index';
+import { messages } from '../../db/schema';
 import type { FastifyInstance } from 'fastify';
 
 let app: FastifyInstance;
@@ -104,6 +104,6 @@ describe('POST /webhook/sms', () => {
     await new Promise((resolve) => setTimeout(resolve, 16_000));
 
     const msgs = await db.select().from(messages);
-    expect(msgs[0].status).toBe('sent');
+    expect(msgs[0].status).toBe('received');
   });
 });

@@ -1,10 +1,10 @@
 import Fastify from 'fastify';
 import formbody from '@fastify/formbody';
-import { logger } from './lib/logger.ts';
-import { db } from './db/client.ts';
-import { connection as redisConnection } from './queue/index.ts';
-import { webhookRoutes } from './modules/webhook/webhook.controller.ts';
-import { conversationsRoutes } from './modules/conversations/conversations.controller.ts';
+import { logger } from './lib/logger';
+import { db } from './db/client';
+import { connection as redisConnection } from './queue/index';
+import { webhookRoutes } from './modules/webhook/webhook.controller';
+import { conversationsRoutes } from './modules/conversations/conversations.controller';
 import { sql } from 'drizzle-orm';
 
 export function buildApp() {

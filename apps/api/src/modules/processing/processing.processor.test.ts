@@ -8,12 +8,12 @@ vi.mock('../../services/twilio/index.ts', () => ({ getTwilioClient: vi.fn() }));
 vi.mock('../../lib/logger.ts', () => ({ logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() } }));
 vi.mock('./processing.handler.ts', () => ({ generateReply: vi.fn() }));
 
-import { processJob, attachWorkerEvents } from './processing.processor.ts';
-import { db } from '../../db/client.ts';
-import { connection } from '../../queue/index.ts';
-import { sseBus } from '../../services/events/sse.bus.ts';
-import { getTwilioClient } from '../../services/twilio/index.ts';
-import { generateReply } from './processing.handler.ts';
+import { processJob, attachWorkerEvents } from './processing.processor';
+import { db } from '../../db/client';
+import { connection } from '../../queue/index';
+import { sseBus } from '../../services/events/sse.bus';
+import { getTwilioClient } from '../../services/twilio/index';
+import { generateReply } from './processing.handler';
 
 const mockDb = db as {
   update: ReturnType<typeof vi.fn>;
@@ -94,7 +94,7 @@ describe('processJob', () => {
     expect(mockBus.emit).toHaveBeenCalledWith('message:processing', expect.objectContaining({ messageId: 'msg-1', status: 'processing' }));
     expect(mockBus.emit).toHaveBeenCalledWith('message:sent', expect.objectContaining({ messageId: 'msg-1', status: 'sent' }));
 
-    expect(mockConnection.set).toHaveBeenCalledWith('lock:conversation:conv-1', '1', 'NX', 'PX', 30_000);
+    expect(mockConnection.set).toHaveBeenCalledWith('lock:conversation:conv-1', '1', 'PX', 30_000, 'NX');
     expect(mockConnection.del).toHaveBeenCalledWith('lock:conversation:conv-1');
   });
 

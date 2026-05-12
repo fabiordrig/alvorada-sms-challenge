@@ -1,5 +1,5 @@
 import { ConversationWithLastMessage, Message } from '@sms/shared';
-import { apiFetch } from '../../lib/http.ts';
+import { apiFetch } from '../../lib/http';
 
 export async function fetchConversations(): Promise<ConversationWithLastMessage[]> {
   const data = await apiFetch<{ items: ConversationWithLastMessage[] }>('/conversations');

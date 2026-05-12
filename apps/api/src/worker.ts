@@ -1,6 +1,6 @@
-import { config } from './config.ts';
-import { logger } from './lib/logger.ts';
-import { createWorker, attachWorkerEvents } from './modules/processing/processing.processor.ts';
+import { config } from './config';
+import { logger } from './lib/logger';
+import { createWorker, attachWorkerEvents } from './modules/processing/processing.processor';
 
 const worker = createWorker();
 attachWorkerEvents(worker);

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import crypto from 'crypto';
-import { validateTwilioSignature } from './webhook.signature.ts';
+import { validateTwilioSignature } from './webhook.signature';
 
 // Fixed test vectors — computed offline, not derived from the implementation.
 // authToken=test-auth-token, url=https://example.com/webhook/sms

@@ -1,6 +1,6 @@
-import { config } from './config.ts';
-import { logger } from './lib/logger.ts';
-import { buildApp } from './app.ts';
+import { config } from './config';
+import { logger } from './lib/logger';
+import { buildApp } from './app';
 
 const app = buildApp();
 

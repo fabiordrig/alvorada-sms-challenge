@@ -1,6 +1,6 @@
-import { TwilioClient } from './twilio.interface.ts';
-import { config } from '../../config.ts';
-import { logger } from '../../lib/logger.ts';
+import { TwilioClient } from './twilio.interface';
+import { config } from '../../config';
+import { logger } from '../../lib/logger';
 
 export class MockTwilioClient implements TwilioClient {
   async sendMessage(to: string, body: string): Promise<{ sid: string }> {

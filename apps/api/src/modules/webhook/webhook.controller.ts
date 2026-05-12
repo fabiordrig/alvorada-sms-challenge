@@ -1,9 +1,9 @@
 import { FastifyInstance } from 'fastify';
 import { TwilioWebhookSchema } from '@sms/shared';
-import { handleInbound } from './webhook.service.ts';
-import { validateTwilioSignature } from './webhook.signature.ts';
-import { config } from '../../config.ts';
-import { logger } from '../../lib/logger.ts';
+import { handleInbound } from './webhook.service';
+import { validateTwilioSignature } from './webhook.signature';
+import { config } from '../../config';
+import { logger } from '../../lib/logger';
 
 export async function webhookRoutes(app: FastifyInstance) {
   app.post('/webhook/sms', async (request, reply) => {

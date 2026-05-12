@@ -3,9 +3,9 @@ import {
   findConversations,
   findMessagesByConversation,
   findConversationById,
-} from './conversations.repository.ts';
-import { sseBus } from '../../services/events/sse.bus.ts';
-import { SseEvent } from '@sms/shared';
+} from './conversations.repository';
+import { sseBus } from '../../services/events/sse.bus';
+import { SseEvent, ConversationIdParamSchema } from '@sms/shared';
 
 export async function conversationsRoutes(app: FastifyInstance) {
   app.get('/conversations', async (_request, reply) => {
@@ -13,16 +13,24 @@ export async function conversationsRoutes(app: FastifyInstance) {
     return reply.send({ items });
   });
 
-  app.get<{ Params: { id: string } }>('/conversations/:id/messages', async (request, reply) => {
-    const { id } = request.params;
+  app.get('/conversations/:id/messages', async (request, reply) => {
+    const parsed = ConversationIdParamSchema.safeParse(request.params);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: 'Invalid id', details: parsed.error.issues });
+    }
+    const { id } = parsed.data;
     const conv = await findConversationById(id);
     if (!conv) return reply.code(404).send({ error: 'Conversation not found' });
     const items = await findMessagesByConversation(id);
     return reply.send({ items });
   });
 
-  app.get<{ Params: { id: string } }>('/conversations/:id/events', async (request, reply) => {
-    const { id } = request.params;
+  app.get('/conversations/:id/events', async (request, reply) => {
+    const parsed = ConversationIdParamSchema.safeParse(request.params);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: 'Invalid id', details: parsed.error.issues });
+    }
+    const { id } = parsed.data;
 
     reply.raw.writeHead(200, {
       'Content-Type': 'text/event-stream',
