@@ -66,88 +66,70 @@ to run the full system locally.
 
 ## Try it
 
-### Send an inbound SMS webhook
+Open [http://localhost:5173](http://localhost:5173) after `make dev`.
+
+- Use the **Simulate Inbound SMS** form to send messages without curl
+- Watch status transitions live: `received → processing → sent`
+- Click a conversation to open the message thread with real-time updates
+- Send to `+5511999000003` to trigger a simulated processing failure
+
+### Or via curl (API directly)
 
 ```bash
+# Send a webhook — expect 200 OK in < 100 ms
 time curl -X POST localhost:3000/webhook/sms \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "From=+5511999999999&Body=hello&MessageSid=SM_test_1"
-```
 
-Expected: `200 OK` in < 100 ms. The real time output confirms the < 5 s constraint is met.
+# List conversations
+curl localhost:3000/conversations | jq '.items'
 
-### Test idempotency
+# List messages for a conversation
+CONV_ID=$(curl -s localhost:3000/conversations | jq -r '.items[0].id')
+curl "localhost:3000/conversations/$CONV_ID/messages" | jq '.items'
 
-Run the exact same curl command again. Only one message row will exist in the DB:
-
-```bash
-curl localhost:3000/conversations | jq '.[0].messageCount'
-# => 1  (not 2)
-```
-
-### List conversations
-
-```bash
-curl localhost:3000/conversations | jq
-```
-
-### List messages for a conversation
-
-```bash
-CONV_ID=$(curl -s localhost:3000/conversations | jq -r '.[0].id')
-curl "localhost:3000/conversations/$CONV_ID/messages" | jq
-```
-
-### Watch real-time status updates
-
-Open the frontend at [http://localhost:5173](http://localhost:5173) and send a webhook in
-another terminal. Watch the status badge transition live:
-`received → processing → sent`
-
-### Simulate a failure
-
-```bash
-time curl -X POST localhost:3000/webhook/sms \
+# Trigger simulated failure (number +5511999000003 always fails before any I/O)
+curl -X POST localhost:3000/webhook/sms \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "From=+5511888888888&Body=fail&MessageSid=SM_fail_1"
+  -d "From=+5511999000003&Body=fail&MessageSid=SM_fail_1"
 ```
-
-The mock client has a configurable failure rate (`TWILIO_MOCK_FAIL_RATE=1.0` forces all
-failures). After exhausting retries the message status becomes `failed`.
 
 ## Make targets
 
-| Target          | Description                                                   |
-|-----------------|---------------------------------------------------------------|
-| `make setup`    | Install deps + start Docker services + run DB migrations      |
-| `make dev`      | Start API, worker, and frontend in watch mode                 |
-| `make api`      | Start only the Fastify API (port 3000)                        |
-| `make worker`   | Start only the BullMQ worker                                  |
-| `make web`      | Start only the Vite frontend (port 5173)                      |
-| `make infra`    | Start Postgres + Redis via Docker Compose                     |
-| `make migrate`  | Run Drizzle migrations                                        |
-| `make db:reset` | Drop + recreate DB schema (dev only)                          |
-| `make test`     | Run all tests (unit + integration)                            |
-| `make lint`     | ESLint + tsc type-check across all packages                   |
-| `make clean`    | Remove node_modules + dist artifacts                          |
+| Target            | Description                                                   |
+|-------------------|---------------------------------------------------------------|
+| `make setup`      | Install deps + start Docker services + run DB migrations      |
+| `make dev`        | Start API, worker, and frontend in watch mode                 |
+| `make dev-api`    | Start only the Fastify API (port 3000)                        |
+| `make dev-worker` | Start only the BullMQ worker                                  |
+| `make dev-web`    | Start only the Vite frontend (port 5173)                      |
+| `make infra-up`   | Start Postgres + Redis via Docker Compose                     |
+| `make infra-down` | Stop Postgres + Redis                                         |
+| `make db-migrate` | Run Drizzle migrations                                        |
+| `make db-generate`| Generate migrations from schema changes                       |
+| `make reset`      | Wipe Docker volumes + reinstall + migrate (dev only)          |
+| `make test`       | Run unit tests (14 tests)                                     |
+| `make test-e2e`   | Run E2E tests (starts infra automatically)                    |
+| `make lint`       | ESLint across all packages                                    |
+| `make build`      | Build all packages                                            |
 
 ## Environment variables
 
 | Variable                    | Default          | Description                                         |
 |-----------------------------|------------------|-----------------------------------------------------|
 | `DATABASE_URL`              | (required)       | Postgres connection string                          |
-| `REDIS_URL`                 | `redis://localhost:6379` | Redis connection string                   |
+| `REDIS_URL`                 | (required)       | Redis connection string                             |
 | `PORT`                      | `3000`           | Fastify API port                                    |
+| `NODE_ENV`                  | `development`    | `development` / `production` / `test`               |
 | `TWILIO_USE_MOCK`           | `true`           | Use mock Twilio client (no real account needed)     |
+| `TWILIO_MOCK_DELAY_MIN`     | `3000`           | Mock min latency in ms                              |
+| `TWILIO_MOCK_DELAY_MAX`     | `15000`          | Mock max latency in ms                              |
+| `TWILIO_MOCK_FAIL_RATE`     | `0`              | Fraction of mock calls that fail (0.0–1.0)          |
 | `TWILIO_ACCOUNT_SID`        | —                | Required if `TWILIO_USE_MOCK=false`                 |
 | `TWILIO_AUTH_TOKEN`         | —                | Required if `TWILIO_USE_MOCK=false`                 |
 | `TWILIO_FROM_NUMBER`        | —                | E.164 number to send from                           |
 | `TWILIO_VALIDATE_SIGNATURE` | `false`          | Enable HMAC-SHA1 webhook signature validation       |
-| `TWILIO_MOCK_LATENCY_MS`    | `300`            | Simulated Twilio API latency in mock mode           |
-| `TWILIO_MOCK_FAIL_RATE`     | `0.1`            | Fraction of mock calls that fail (0.0–1.0)          |
-| `WORKER_CONCURRENCY`        | `5`              | Parallel jobs per worker process                    |
-| `LOG_LEVEL`                 | `info`           | pino log level                                      |
-| `NODE_ENV`                  | `development`    | `development` / `production` / `test`               |
+| `TWILIO_WEBHOOK_URL`        | —                | Public URL for signature validation                 |
 
 ## Known Limitations / Out of Scope
 
